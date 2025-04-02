@@ -1,0 +1,88 @@
+CREATE DATABASE IF NOT EXISTS Webgamestore;
+USE Webgamestore;
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- sau khi tạo bảng categories, thêm dữ liệu vào bảng:
+    -- INSERT INTO categories (name) VALUES 
+    -- ('Action'), 
+    -- ('Adventure'), 
+    -- ('Strategy'), 
+    -- ('Role-Playing'), 
+    -- ('Sports'), 
+    -- ('Racing'), 
+    -- ('Horror'), 
+    -- ('Simulation'), 
+    -- ('Music'), 
+    -- ('Survival'), 
+    -- ('Shooting'), 
+    -- ('Puzzle'), 
+    -- ('Business'), 
+    -- ('Open World'), 
+    -- ('Fighting'), 
+    -- ('Adventure Puzzle');
+
+
+CREATE TABLE games (
+    -- sau khi tạo bảng games, thêm cột image vào bảng:
+    -- ALTER TABLE games ADD COLUMN image LONGBLOB NOT NULL AFTER genre;
+    -- ALTER TABLE games ADD COLUMN image LONGBLOB;
+    -- sau khi tạo bảng games, thêm cột genre, comment vào bảng:
+    -- ALTER TABLE games ADD genre VARCHAR(255);
+    -- ALTER TABLE games ADD comment TEXT;
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT,
+    title VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2),
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE orders (
+    -- sau khi tạo bảng orders, thêm cột order_detail vào bảng:
+    -- ALTER TABLE orders ADD order_details TEXT;
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_price DECIMAL(10,2),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE order_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    game_id INT,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    game_id INT,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE order_items (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    order_id INT(11),
+    game_id INT(11),
+    quantity INT(11) NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (game_id) REFERENCES games(id)
+);
